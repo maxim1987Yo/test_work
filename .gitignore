@@ -42,8 +42,8 @@ TODO.md
 app/sprogress/dev_settings.py
 venv
 env
-/app/sprogress/files/media/
-/app/sprogress/files/static/
+/ticket_store/media/
+/ticket_store/static/
 
 
 # unit test and coverage reports

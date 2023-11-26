@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    env_file:
+      - ./ticket_store/.env
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  web: &django_conf
+    build:
+      context: ./ticket_store
+      dockerfile: Dockerfile
+    volumes:
+      - ./ticket_store:/ticket_store
+    env_file:
+      - ./ticket_store/.env
+
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - redis
+      - db
+    ports:
+      - "8000:80"
+
+  celery:
+    <<: *django_conf
+    command: celery -A conf worker -E -l DEBUG
+    ports: [ ]
+    depends_on:
+      - web
+
+  redis:
+    image: redis
+    ports:
+      - "6378:6379"
+
+volumes:
+  postgresdata:

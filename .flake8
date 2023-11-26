@@ -1,0 +1,15 @@
+[flake8]
+exclude = __pycache__, settings.py, backends.py,
+max-complexity = 7
+max-line-length = 119
+jobs = 4
+max-cognitive-complexity=9
+extend-select = NT
+ignore-django-orm-queries-complexity=true
+ignore = PT001, PT023, PIE783, W503, E731
+per-file-ignores =
+  # There are multiple `assert`s in tests, we allow them:
+  test_*.py: S101, E501, ANN201,
+  */migrations/*.py: E800, E501,
+  celery_settings.py: E800,
+  __init__.py: F401, F403

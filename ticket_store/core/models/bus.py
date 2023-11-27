@@ -1,4 +1,3 @@
-from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
@@ -24,3 +23,6 @@ class Bus(models.Model):
                 violation_error_message='Вместимость автобуса не может быть меньше 1',
             ),
         ]
+
+    def __str__(self):
+        return f'автобус {self.pk}'

@@ -11,3 +11,6 @@ class Company(models.Model):
     class Meta:
         verbose_name = 'транспортная компания'
         verbose_name_plural = 'транспортные компании'
+
+    def __str__(self):
+        return f'транспортная компания {self.pk}'

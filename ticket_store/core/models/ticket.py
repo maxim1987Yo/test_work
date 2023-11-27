@@ -35,3 +35,6 @@ class Ticket(models.Model):
 
     class Meta:
         verbose_name = 'Информация о билете на автобус'
+
+    def __str__(self):
+        return f'Информация о билете на автобус {self.pk}'

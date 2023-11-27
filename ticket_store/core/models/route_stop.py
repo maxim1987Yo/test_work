@@ -23,3 +23,6 @@ class RouteStop(models.Model):
     class Meta:
         verbose_name = 'Промежуточная остановка на маршруте'
         verbose_name_plural = 'Промежуточные остановки на маршруте'
+
+    def __str__(self):
+        return f'Промежуточная остановка на маршруте {self.pk}'

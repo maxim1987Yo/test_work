@@ -9,3 +9,6 @@ class Stop(models.Model):
     class Meta:
         verbose_name = 'остановка'
         verbose_name_plural = 'остановки'
+
+    def __str__(self):
+        return f'Остановка {self.pk}'

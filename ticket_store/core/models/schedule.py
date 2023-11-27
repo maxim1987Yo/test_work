@@ -29,3 +29,6 @@ class Schedule(models.Model):
     class Meta:
         verbose_name = 'Расписание автобусов'
         verbose_name_plural = 'Расписания автобусов'
+
+    def __str__(self):
+        return f'Расписания автобуса {self.pk}'

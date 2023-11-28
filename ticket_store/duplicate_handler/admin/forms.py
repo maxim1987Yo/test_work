@@ -1,4 +1,6 @@
 from django import forms
+from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from duplicate_handler.models import DuplicateHandler
 
@@ -13,6 +15,9 @@ class DuplicateHandlerAdminModelForm(forms.ModelForm):
         choices=[],
         label='замена',
         required=False,
+    )
+    content_type = forms.ModelChoiceField(
+        queryset=ContentType.objects.filter(app_label__in=settings.DUPLICATE_HANDLER_APPS)
     )
 
     class Meta:

@@ -14,6 +14,7 @@ services:
     ports:
       - "5432:5432"
   web: &django_conf
+    container_name: django_app
     build:
       context: ./ticket_store
       dockerfile: Dockerfile
@@ -34,6 +35,7 @@ services:
 
   celery:
     <<: *django_conf
+    container_name: celery_app
     command: celery -A conf worker -E -l DEBUG
     ports: [ ]
     depends_on:

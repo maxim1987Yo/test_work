@@ -145,3 +145,4 @@ CACHES = {
         'LOCATION': CELERY_BROKER_URL,
     }
 }
+DUPLICATE_HANDLER_APPS = ['core']

@@ -1,0 +1,23 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+
+{% block submit_buttons_bottom %}
+    {% if adminform.form.instance.pk and adminform.form.instance.status == 1 %}
+    <div id="progress-wrapper" object_id="{{ adminform.form.instance.pk }}">
+        <div id="progress-bar" style="background-color: blue; width: 0%;">&nbsp;</div>
+        <div id="progress-bar-message">Waiting for progress to start...</div>
+    </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block admin_change_form_document_ready %}
+    {{ block.super }}
+    {% if not adminform.form.instance.pk %}
+        <script src="{% static 'admin/js/get_async.js' %}"></script>
+    {% endif %}
+    {% if adminform.form.instance.pk and adminform.form.instance.status == 1 %}
+        <script src="{% static 'admin/js/progress_bar.js' %}"></script>
+    {% endif %}
+{% endblock %}

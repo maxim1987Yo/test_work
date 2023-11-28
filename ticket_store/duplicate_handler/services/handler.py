@@ -1,8 +1,11 @@
+import time
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Model
 
-from duplicate_handler.models import DuplicateHandler
+from duplicate_handler.models import DuplicateHandler, DuplicateHandlerStatus
+from duplicate_handler.services.progress_observer import ProgresObserver
 from duplicate_handler.utils import ModelDescriptor, ModelHelper
 
 
@@ -14,10 +17,12 @@ class DuplicateHandlerService:
     def __init__(self, handler_id: int):
         self.handler: DuplicateHandler = DuplicateHandler.objects.filter(pk=handler_id).first()
         if not self.handler:
-            raise Exception('error')
+            raise Exception('Не найден обработчик дублей')
         self.transfer_model: Model = self.handler.content_type.model_class()
         self.original: Model = self.handler.original
         self.replacement: Model = self.handler.replacement
+        self.progress_observer = None
+        self.result = ''
 
     @property
     def transfer_model_name(self) -> str:
@@ -43,15 +48,22 @@ class DuplicateHandlerService:
         return result
 
     def _transfer_model_handler(self, transfer_model: ModelHelper):
+        model_name = transfer_model.model._meta.verbose_name
         for field in transfer_model.fields:
             queryset = transfer_model.model.objects.filter(**{field: self.original})
-            queryset.update(**{field: self.replacement})
-
-    def _generate_result(self):
-        """"""
+            count = queryset.update(**{field: self.replacement})
+            self.result += f'В таблице {model_name} для поля {field} обработано {count} дублей\n'
 
     def transfer(self):
         transfer_models = self._get_transfer_models()
         with transaction.atomic():
-            for transfer_model in transfer_models:
+            self.progress_observer = ProgresObserver(
+                itm_count=len(transfer_models),
+                cache_id=f'transfer_{self.handler.pk}'
+            )
+            for idx, transfer_model in enumerate(transfer_models, start=1):
                 self._transfer_model_handler(transfer_model)
+                self.progress_observer.set_progress(idx)
+            self.handler.result = self.result
+            self.handler.status = DuplicateHandlerStatus.SUCCESS
+            self.handler.save()
